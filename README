@@ -2,7 +2,7 @@ studies for finite element method, first target is 1D version.
 in progress...
 
 there are some prerequirements for FEM.
-1. solve asymmetric sparse linear system
+1. asymmetric sparse linear system solver
 2. numerical integration
 
 so as the first step, implemented BiCGSTAB method for 1.
