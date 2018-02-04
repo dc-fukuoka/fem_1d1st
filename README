@@ -4,7 +4,7 @@ in progress...
 there are some prerequirements for FEM.
 
 1. asymmetric sparse linear system solver
-2. numerical integration(Gaussian quadrature, 2-points is enough for up to second order elements)
+2. numerical integration(Gaussian quadrature, 2-points are enough for up to second order elements)
 3. sort algorithm(Bubble sort is enough, not mandatory?)
 
 so as the first step, implemented BiCGSTAB method for 1.
