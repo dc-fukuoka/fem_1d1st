@@ -1,4 +1,4 @@
-one dimensional first elemnt finite element method using BiCGSTAB method.
+one dimensional first element finite element method using BiCGSTAB method.
 
 ~~~
 $ make
