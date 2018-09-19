@@ -1,3 +1,7 @@
+FC = $(shell printenv FC)
+ifeq ($(FC),)
+	FC = gfortran
+endif
 all:
 	$(FC) -D_DEBUG -g -O3 -march=core-avx2 -fopenmp 1d_1st.F90
 
