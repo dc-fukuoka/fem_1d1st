@@ -25,3 +25,9 @@ i, exact solution, 1st element FEM, diff:           2  -2.50000E+00  -2.50000E+0
 i, exact solution, 1st element FEM, diff:           3  -4.00000E+00  -4.00000E+00  -8.88178E-16
 i, exact solution, 1st element FEM, diff:           4  -4.50000E+00  -4.50000E+00  -8.88178E-16
 ~~~
+  
+TODO:
+======
+* add a graph to compare the first element(patching linear functions) and exact one
+* do FEM by second order element(a*x^2 + b*x + c) in 1D
+* try 2D, 3D
