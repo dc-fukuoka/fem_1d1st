@@ -207,6 +207,9 @@ contains
     type(elem),intent(in) :: e
     integer :: i, j
 
+    write(6, *) "e%nelements:", e%nelements
+    write(6, *) "e%nnodes:   ", e%nnodes
+    
     write(6, *) "points:"
     do i = 1, e%nnodes
        write(6, '(1pe14.5)', advance='no') e%pts(i)
@@ -256,10 +259,12 @@ contains
     integer :: i
     real(dp) :: exact, diff
 
+    write(6, *) "check the result:"
+    write(6, '(a)') "i, exact solution, 1st element FEM, diff:"
     do i = 1, e%nnodes
        exact = exact_sol(e, e%pts(i))
        diff = e%u(i) - exact
-       write(6, '(a, i, 3(1pe14.5))') "i, exact solution, 1st element FEM, diff:", i, exact, e%u(i), diff
+       write(6, '(i0, 3(1pe14.5))') i, exact, e%u(i), diff
     end do
     
   end subroutine check
@@ -460,8 +465,6 @@ program main
   type(elem) :: e
   
   call get_size(e)
-  write(6, *) "e%nelements:", e%nelements
-  write(6, *) "e%nnodes:", e%nnodes
   call allocate_arrays(e)
   call read_input(e)
   call calc_lengths(e)

@@ -4,7 +4,7 @@ one dimensional first element finite element method(Galerkin method) using BiCGS
 $ make
 $ ./a.out
  e%nelements:           3
- e%nnodes:           4
+ e%nnodes:              4
  points:
    0.00000E+00   1.00000E+00   2.00000E+00   3.00000E+00
  lhs A:
@@ -20,10 +20,12 @@ $ ./a.out
   -5.00000E-01
  BiCGSTAB method converged.
  iter, res:           3  8.881784197001252E-016
-i, exact solution, 1st element FEM, diff:           1   0.00000E+00   0.00000E+00   0.00000E+00
-i, exact solution, 1st element FEM, diff:           2  -2.50000E+00  -2.50000E+00  -4.44089E-16
-i, exact solution, 1st element FEM, diff:           3  -4.00000E+00  -4.00000E+00  -8.88178E-16
-i, exact solution, 1st element FEM, diff:           4  -4.50000E+00  -4.50000E+00  -8.88178E-16
+ check the result:
+i, exact solution, 1st element FEM, diff:
+1   0.00000E+00   0.00000E+00   0.00000E+00
+2  -2.50000E+00  -2.50000E+00  -4.44089E-16
+3  -4.00000E+00  -4.00000E+00  -8.88178E-16
+4  -4.50000E+00  -4.50000E+00  -8.88178E-16
 ~~~
   
 TODO:
