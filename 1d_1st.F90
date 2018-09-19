@@ -446,8 +446,6 @@ end module vars
 program main
   use vars
   implicit none
-  integer :: size
-  integer :: i
   type(elem) :: e
   
   call get_size(e)
