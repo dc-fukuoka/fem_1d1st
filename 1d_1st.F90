@@ -8,7 +8,7 @@ module vars
   implicit none
   integer,parameter  :: ui = 7
   integer,parameter  :: dp = kind(1.0d0)
-  real(dp),parameter :: length = 1.0d0 ! = L
+  real(dp),parameter :: length = 3.0d0 ! = L
   integer,parameter  :: iter_max = 10000
   real(dp),parameter :: tol = 1.0d-10
   real(dp),parameter :: lambda = 1.0d0
@@ -174,6 +174,14 @@ contains
           end do
        end do
     end do
+
+    ! the above matrix does not have an inverse matrix, so add a condition by the boundary condition: u_1 = 0
+    ! | 1 0 0 0 | |u_1|   | 0 |
+    ! |         | |   | = |   |
+    ! |         | |   |   |   |
+    ! |         | |   |   |   |
+    e%a(1, 1) = 1.0d0
+    e%a(1, 2) = 0.0d0
     
   end subroutine asm_submats
 
@@ -188,6 +196,9 @@ contains
           e%b(j+i-1) = e%b(j+i-1) + e%subvec(i, j)
        end do
     end do
+
+    ! u_1 = 0
+    e%b(1) = 0.0d0
 
   end subroutine asm_subvecs
 
@@ -204,8 +215,12 @@ contains
 
     write(6, *) "lhs A:"
     do i = 1, e%nnodes
-       write(6, '(8(1pe14.5))') (e%a(i, j), j=1,e%nnodes)
+       do j = 1, e%nnodes
+          write(6, '(1pe14.5)', advance='no') e%a(i, j)
+       end do
+       write(6, *)
     end do
+
     write(6, *)
     write(6, *) "rhs b:"
     do i = 1, e%nnodes
@@ -228,12 +243,12 @@ contains
     implicit none
     type(elem),intent(in) :: e
     integer :: i
-    real(dp) :: diff
+    real(dp) :: exact, diff
 
-    diff = 0.0d0
     do i = 1, e%nnodes
-       diff = e%u(i) - exact_sol(e, e%pts(i))
-       write(6, *) "i:", i, "diff:", diff
+       exact = exact_sol(e, e%pts(i))
+       diff = e%u(i) - exact
+       write(6, '(a, i, 3(1pe14.5))') "i, exact solution, 1st element FEM, diff:", i, exact, e%u(i), diff
     end do
     
   end subroutine check
