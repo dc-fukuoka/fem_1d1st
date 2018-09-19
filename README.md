@@ -1,4 +1,4 @@
-one dimensional first element finite element method(Galerkin method) using BiCGSTAB method.
+one dimensional first order element finite element method(Galerkin method) using BiCGSTAB method.
 
 ~~~
 $ make
