@@ -6,7 +6,7 @@
 
 module vars
   implicit none
-  integer,parameter  :: ui = 7
+  integer,parameter  :: ui = 7, ui_out = 8
   integer,parameter  :: dp = kind(1.0d0)
   real(dp),parameter :: length = 3.0d0 ! = L
   integer,parameter  :: iter_max = 10000
@@ -228,6 +228,17 @@ contains
     end do
     
   end subroutine debug
+
+  subroutine write_output(e)
+    implicit none
+    type(elem),intent(in) :: e
+    integer :: i
+
+    open(ui_out, file='result.dat', form='unformatted', access='stream')
+    write(ui_out) e%u
+    close(ui_out)
+    
+  end subroutine write_output
 
   function exact_sol(e, x) result(res)
     implicit none
@@ -465,6 +476,7 @@ program main
   ! solve Au = b
   call bicgstab(e%nnodes, e%a, e%u, e%b)
   call check(e)
+  call write_output(e)
   call deallocate_arrays(e)
   stop
 end program main
