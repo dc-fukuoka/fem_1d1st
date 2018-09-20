@@ -1,0 +1,6 @@
+&params
+length = 3.0d0 ! = L
+iter_max = 10000
+tol = 1.0d-10
+lambda = 1.0d0
+/

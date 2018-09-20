@@ -6,12 +6,14 @@
 
 module vars
   implicit none
-  integer,parameter  :: ui = 7, ui_out = 8
+  integer,parameter  :: ui = 7, ui_nml = 11, ui_out = 8
   integer,parameter  :: dp = kind(1.0d0)
-  real(dp),parameter :: length = 3.0d0 ! = L
-  integer,parameter  :: iter_max = 10000
-  real(dp),parameter :: tol = 1.0d-10
-  real(dp),parameter :: lambda = 1.0d0
+  
+  real(dp) :: length ! L
+  integer  :: iter_max
+  real(dp) :: tol
+  real(dp) :: lambda
+  
   type elem
      integer :: nelements
      integer :: nnodes
@@ -38,6 +40,13 @@ contains
     e%nnodes    = size + 2
     e%nelements = size + 1
   end subroutine get_size
+
+  subroutine read_namelist
+    implicit none
+    namelist/params/length, iter_max, tol, lambda
+
+    read(ui_nml, nml=params)
+  end subroutine read_namelist
 
   subroutine allocate_arrays(e)
     implicit none
@@ -465,6 +474,7 @@ program main
   type(elem) :: e
   
   call get_size(e)
+  call read_namelist
   call allocate_arrays(e)
   call read_input(e)
   call calc_lengths(e)
