@@ -52,6 +52,7 @@ TODO:
 ======
 * do FEM by second order element(a*x^2 + b*x + c) in 1D
 * try 2D, 3D
+* parallelize it by MPI
 
 graph
 ======
