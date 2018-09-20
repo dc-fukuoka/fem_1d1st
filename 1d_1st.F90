@@ -59,6 +59,8 @@ contains
     allocate(e%subvec(2, e%nelements))
 
     ! zero clear
+    !$omp parallel
+    !$omp workshare
     e%u = 0.0d0
     e%b = 0.0d0
     e%pts = 0.0d0
@@ -66,6 +68,8 @@ contains
     e%ls = 0.0d0
     e%submat = 0.0d0
     e%subvec = 0.0d0
+    !$omp end workshare
+    !$omp end parallel
   end subroutine allocate_arrays
 
   subroutine deallocate_arrays(e)
