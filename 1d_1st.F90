@@ -268,13 +268,17 @@ contains
     integer :: i
     real(dp) :: exact, diff
 
-    write(6, *) "check the result:"
-    write(6, '(a)') "i, exact solution, 1st element FEM, diff:"
+    !$omp parallel do private(exact, diff)
     do i = 1, e%nnodes
        exact = exact_sol(e, e%pts(i))
        diff = e%u(i) - exact
-       write(6, '(i0, 3(1pe14.5))') i, exact, e%u(i), diff
+       if (diff >= tol) then
+          write(6, '(i0, 3(1pe14.5))') i, exact, e%u(i), diff
+          write(6, *) "incorrect result."
+          stop
+       end if
     end do
+    write(6, *) "check passed."
     
   end subroutine check
 
