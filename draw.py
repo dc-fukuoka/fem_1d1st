@@ -15,7 +15,7 @@ lam    = nml["params"]["lambda"]
 nlines = len(open(x_file).readlines())
 
 x_coords       = np.zeros(nlines+2, dtype=np.float64)
-x_coords[1:-1] = np.loadtxt(x_file, dtype=np.float64, unpack=True)
+x_coords[1:-1] = np.loadtxt(x_file, dtype=np.float64)
 x_coords[-1]   = L
 
 with open(fem_file, "rb") as fp:
