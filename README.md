@@ -13,7 +13,7 @@ how to test:
 ------
 
 ~~~
-$ vi fort.11 # adjust length, this is the left boundary, right boundary is zero
+$ vi fort.11 # adjust length, this is the right boundary, left boundary is zero
 $ vi fort.7  # add values between zero and length
 $ make
 $ ./a.out
