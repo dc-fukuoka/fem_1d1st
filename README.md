@@ -16,7 +16,7 @@ how to test:
 $ vi fort.11 # adjust length, this is the left boundary, right boundary is zero
 $ vi fort.7  # add values between zero and length
 $ make
-$ A3000353@r2i1n0:/gs/hs1/tga-hpe_group00/A3000353/git/fem_1d1st> ./a.out
+$ ./a.out
  e%nelements:           7
  e%nnodes:              8
  points:
@@ -64,4 +64,4 @@ TODO:
 
 graph
 ======
-![Alt text](fem.gif?raw=true "fem")
+![Alt text](fem.png?raw=true "fem")
