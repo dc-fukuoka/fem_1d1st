@@ -8,12 +8,12 @@ module vars
   implicit none
   integer,parameter  :: ui = 7, ui_nml = 11, ui_out = 8
   integer,parameter  :: dp = kind(1.0d0)
-  
+
   real(dp) :: length ! L
   integer  :: iter_max
   real(dp) :: tol
   real(dp) :: lambda
-  
+
   type elem
      integer :: nelements
      integer :: nnodes
@@ -51,7 +51,7 @@ contains
   subroutine allocate_arrays(e)
     implicit none
     type(elem),intent(inout) :: e
-    
+
     allocate(e%u(e%nnodes), e%b(e%nnodes), e%pts(e%nnodes))
     allocate(e%a(e%nnodes, e%nnodes))
     allocate(e%ls(e%nelements))
@@ -138,7 +138,7 @@ contains
 
     res = alpha*x + beta
   end function lin
-  
+
   ! numerical integration
   ! gaussian quadrature for linear function
   ! integrate alpha*x + beta from a to b
@@ -157,7 +157,7 @@ contains
        x   = (b - a)/2.0d0*gauss_nodes(i) + (b + a)/2.0d0
        res = res + (b - a)/2.0d0*weights(i)*lin(alpha, beta, x)
     end do
-    
+
   end function gauss_quad
 
   ! calculate sub vectors of right hand side vector
@@ -171,7 +171,7 @@ contains
        e%subvec(1, i) = -1.0d0*lambda*gauss_quad(-1.0d0/e%ls(i),  1.0d0*e%pts(i+1)/e%ls(i), e%pts(i), e%pts(i+1))
        e%subvec(2, i) = -1.0d0*lambda*gauss_quad( 1.0d0/e%ls(i), -1.0d0*e%pts(i)/e%ls(i),   e%pts(i), e%pts(i+1))
     end do
-    
+
   end subroutine calc_subvecs
 
   ! assemble local matrices to global one
@@ -195,7 +195,7 @@ contains
     ! |         | |   |   |   |
     e%a(1, 1) = 1.0d0
     e%a(1, 2) = 0.0d0
-    
+
   end subroutine asm_submats
 
   ! assemble right hand side vector b
@@ -215,14 +215,14 @@ contains
 
   end subroutine asm_subvecs
 
-    subroutine debug(e)
+  subroutine debug(e)
     implicit none
     type(elem),intent(in) :: e
     integer :: i, j
 
     write(6, *) "e%nelements:", e%nelements
     write(6, *) "e%nnodes:   ", e%nnodes
-    
+
     write(6, *) "points:"
     do i = 1, e%nnodes
        write(6, '(1pe14.5)', advance='no') e%pts(i)
@@ -242,7 +242,7 @@ contains
     do i = 1, e%nnodes
        write(6, '(1pe14.5)') e%b(i)
     end do
-    
+
   end subroutine debug
 
   subroutine write_output(e)
@@ -253,7 +253,7 @@ contains
     open(ui_out, file='result.dat', form='unformatted', access='stream')
     write(ui_out) e%u
     close(ui_out)
-    
+
   end subroutine write_output
 
   function exact_sol(e, x) result(res)
@@ -263,9 +263,9 @@ contains
     real(dp) :: res
 
     res = lambda/2.0d0*x*(x - 2.0d0*length)
-    
+
   end function exact_sol
-  
+
   subroutine check(e)
     implicit none
     type(elem),intent(in) :: e
@@ -283,7 +283,7 @@ contains
        end if
     end do
     write(6, *) "check passed."
-    
+
   end subroutine check
 
   ! ax = A*x
@@ -316,13 +316,13 @@ contains
     real(dp),dimension(size),intent(in) :: x, y
     real(dp),intent(out) :: xy
     integer :: i
-    
+
     xy = 0.0d0
     !$omp parallel do reduction(+:xy)
     do i = 1, size
        xy = xy + x(i)*y(i)
     end do
-    
+
   end subroutine x_dot_y
 
   ! calc r = b - A*x
@@ -377,7 +377,7 @@ contains
        write(6, *) "r*r0 is zero."
        stop
     end if
-    
+
     rho   = 1.0d0
     alpha = 1.0d0
     omega = 1.0d0
@@ -391,7 +391,7 @@ contains
 
     do iter = 1, iter_max
        res = 0.0d0
-       
+
        call x_dot_y(size, r0, r, rho_new)
        beta = (rho_new/rho)*(alpha/omega)
        !$omp parallel do
@@ -480,7 +480,7 @@ program main
   use vars
   implicit none
   type(elem) :: e
-  
+
   call get_size(e)
   call read_namelist
   call allocate_arrays(e)
@@ -490,7 +490,7 @@ program main
   call calc_subvecs(e)
   call asm_submats(e)
   call asm_subvecs(e)
-  
+
 #ifdef _DEBUG
   call debug(e)
 #endif
