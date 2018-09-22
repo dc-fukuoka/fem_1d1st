@@ -309,6 +309,31 @@ contains
     !$omp end parallel
   end subroutine a_dot_x
 
+  ! C = A*B
+  subroutine a_dot_b(size, a, b, c)
+    implicit none
+    integer,intent(in) :: size
+    real(dp),dimension(size, size),intent(in) :: a, b
+    real(dp),dimension(size, size),intent(out) :: c
+    integer :: i, j, k
+
+    !$omp parallel private(i, j, k)
+    !$omp workshare
+    c = 0.0d0
+    !$omp end workshare
+
+    !$omp do
+    do j = 1, size
+       do k = 1, size
+          do i  = 1, size
+             c(i, j) = c(i, j) + a(i, k)*b(k, j)
+          end do
+       end do
+    end do
+    !$omp end do
+    !$omp end parallel
+  end subroutine a_dot_b
+
   ! inner product xy = x*y
   subroutine x_dot_y(size, x, y, xy)
     implicit none
@@ -360,12 +385,39 @@ contains
     real(dp) :: alpha, beta
     real(dp) :: r0r, t2, r0v, ts, res
 
+    real(dp),dimension(size, size) :: pinv ! preconditioning matrix, diag(1/A{ii})
+    real(dp),dimension(size, size) :: pinv_a
+    real(dp),dimension(size) :: pinv_b
+
+    ! left precondition
+    ! (P^{-1}A)x = P^{-1}b
+
     !$omp parallel
     !$omp workshare
-    xx = b ! initial guess
+    pinv = 0.0d0
+    !$omp end workshare
+    !$omp do
+    do i = 1, size
+       pinv(i, i) = 1/a(i, i)
+    end do
+    !$omp end do
+
+    ! P^{-1}b = b_i/A_{ii}
+    !$omp do
+    do i = 1, size
+       pinv_b(i) = pinv(i, i)*b(i)
+    end do
+    !$omp end parallel
+
+    ! P^{-1}A
+    call a_dot_b(size, pinv, a, pinv_a)
+
+    !$omp parallel
+    !$omp workshare
+    xx = pinv_b ! initial guess
     !$omp end workshare
     !$omp end parallel
-    call b_minus_ax(size, a, xx, b, r)
+    call b_minus_ax(size, pinv_a, xx, pinv_b, r)
     !$omp parallel
     !$omp workshare
     r0 = r
@@ -377,7 +429,7 @@ contains
        write(6, *) "r*r0 is zero."
        stop
     end if
-
+    
     rho   = 1.0d0
     alpha = 1.0d0
     omega = 1.0d0
@@ -390,22 +442,20 @@ contains
     !$omp end parallel
 
     do iter = 1, iter_max
-       res = 0.0d0
-
        call x_dot_y(size, r0, r, rho_new)
        beta = (rho_new/rho)*(alpha/omega)
        !$omp parallel do
        do i = 1, size
-          p_new(i) = r(i) + beta*(p(i) - omega*v(i))
+          p_new(i) = r(i) + beta*(p(i)-omega*v(i))
        end do
-       call a_dot_x(size, a, p_new, v_new)
+       call a_dot_x(size, pinv_a, p_new, v_new)
        call x_dot_y(size, r0, v_new, r0v)
        alpha = rho_new/r0v
        !$omp parallel do
        do i = 1, size
           h(i) = xx(i) + alpha*p_new(i)
        end do
-       call b_minus_ax(size, a, h, b, rr)
+       call b_minus_ax(size, pinv_a, h, pinv_b, rr)
        call x_dot_y(size, rr, rr, res)
        res = sqrt(res)
        if (res <= tol) then
@@ -420,7 +470,7 @@ contains
        do i = 1, size
           s(i) = r(i) - alpha*v_new(i)
        end do
-       call a_dot_x(size, a, s, t)
+       call a_dot_x(size, pinv_a, s, t)
        call x_dot_y(size, t, s, ts)
        call x_dot_y(size, t, t, t2)
        omega_new = ts/t2
@@ -428,7 +478,7 @@ contains
        do i = 1, size
           xx_new(i) = h(i) + omega_new*s(i)
        end do
-       call b_minus_ax(size, a, xx_new, b, rr)
+       call b_minus_ax(size, pinv_a, xx_new, pinv_b, rr)
        call x_dot_y(size, rr, rr, res)
        res = sqrt(res)
        if (res <= tol) exit
@@ -447,16 +497,6 @@ contains
        !$omp end parallel
        rho   = rho_new
        omega = omega_new
-
-#ifdef _DEBUG
-       if (mod(iter, 100) == 0) then
-          write(6,*) "iter:", iter, "res:", res
-          if (res.ne.res) then ! NaN check
-             write(6, *) "res is NaN, iter:", iter
-             stop
-          end if
-       end if
-#endif
     end do ! iter
 
     if (iter>=iter_max .and. res>tol) then

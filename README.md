@@ -1,6 +1,6 @@
 fem_1d1st
 ======
-one dimensional first order element finite element method(Galerkin method) using BiCGSTAB method.
+one dimensional first order element finite element method(Galerkin method) using BiCGSTAB method + diagonal preconditioning.
 
 requirements for python:
 ------
@@ -41,7 +41,7 @@ $ ./a.out
   -1.50000E-01
   -5.00000E-02
  BiCGSTAB method converged.
- iter, res:           7  1.025023269341165E-011
+ iter, res:           6  2.311200543208557E-015
  check passed.
 
 $ ./draw.py
