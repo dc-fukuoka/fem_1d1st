@@ -114,8 +114,6 @@ contains
     integer :: i, j, k
 
     ! first order element, ((x_{n+1}-x)/l_n, (x-x_n)/l_n), l_n = x_{n+1}-x_n
-    ! calculated analytic derivative, not general way...
-    ! need to do this by numerical derivative methods
     do k = 1, e%nelements
        do j = 1, 2
           do i = 1, 2
